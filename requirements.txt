@@ -1,0 +1,2 @@
+python-swiftclient
+eventlet>=0.9.15

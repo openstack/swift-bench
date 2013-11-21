@@ -21,9 +21,9 @@ import signal
 import uuid
 from optparse import OptionParser
 
-from swift.common.bench import (BenchController, DistributedBenchController,
-                                create_containers, delete_containers)
-from swift.common.utils import readconf, LogAdapter, config_true_value
+from swiftbench.bench import (BenchController, DistributedBenchController,
+                              create_containers, delete_containers)
+from swiftbench.utils import readconf, LogAdapter, config_true_value
 
 # The defaults should be sufficient to run swift-bench on a SAIO
 CONF_DEFAULTS = {
