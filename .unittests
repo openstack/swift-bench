@@ -3,6 +3,6 @@ set -e
 
 python setup.py testr --coverage
 RET=$?
-coverage report -m
+coverage report -mswiftbench
 rm -f .coverage
 exit $RET

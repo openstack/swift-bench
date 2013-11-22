@@ -29,11 +29,21 @@ import eventlet
 import eventlet.pools
 from eventlet.green.httplib import CannotSendRequest
 
-from swift.common.utils import config_true_value, LogAdapter
 import swiftclient as client
-from swift.common import direct_client
-from swift.common.http import HTTP_CONFLICT
-from swift.common.utils import json
+
+from swiftbench.utils import config_true_value
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
+
+try:
+    from swift.common import direct_client
+except ImportError:
+    direct_client = None
+
+HTTP_CONFLICT = 409
 
 
 def _func_on_containers(logger, conf, concurrency_key, func):
@@ -152,7 +162,6 @@ class BenchServer(object):
                 '%(server)s %(asctime)s %(levelname)s %(message)s')
             loghandler.setFormatter(logformat)
             logger.addHandler(loghandler)
-            logger = LogAdapter(logger, 'swift-bench-server')
 
             controller = BenchController(logger, conf)
             try:
@@ -176,6 +185,10 @@ class Bench(object):
         self.key = conf.key
         self.auth_url = conf.auth
         self.use_proxy = config_true_value(conf.use_proxy)
+        if not self.use_proxy and direct_client is None:
+            self.logger.critical("You need to have swift installed if you are "
+                                 "not using the proxy")
+            sys.exit(1)
         self.auth_version = conf.auth_version
         self.logger.info("Auth version: %s" % self.auth_version)
         if self.use_proxy:
