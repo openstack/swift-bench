@@ -34,7 +34,7 @@ if __name__ == '__main__':
         sys.exit(1)
     options, args = parser.parse_args()
 
-    logger = logging.getLogger()
+    logger = logging.getLogger('swift-bench-client')
     logger.setLevel({
         'debug': logging.DEBUG,
         'info': logging.INFO,
@@ -44,8 +44,8 @@ if __name__ == '__main__':
             options.log_level.lower(), logging.INFO))
     loghandler = logging.StreamHandler()
     logger.addHandler(loghandler)
-    logformat = logging.Formatter('%(server)s %(asctime)s %(levelname)s '
-                                  '%(message)s')
+    logformat = logging.Formatter(
+        'swift-bench-client %(asctime)s %(levelname)s %(message)s')
     loghandler.setFormatter(logformat)
 
     def sigterm(signum, frame):

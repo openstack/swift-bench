@@ -161,7 +161,7 @@ if __name__ == '__main__':
         sys.exit('Termination signal received.')
     signal.signal(signal.SIGTERM, sigterm)
 
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger('swift-bench')
     logger.propagate = False
     logger.setLevel({
         'debug': logging.DEBUG,
@@ -172,8 +172,8 @@ if __name__ == '__main__':
             options.log_level.lower(), logging.INFO))
     loghandler = logging.StreamHandler()
     logger.addHandler(loghandler)
-    logformat = logging.Formatter('%(server)s %(asctime)s %(levelname)s '
-                                  '%(message)s')
+    logformat = logging.Formatter(
+        'swift-bench %(asctime)s %(levelname)s %(message)s')
     loghandler.setFormatter(logformat)
 
     if options.use_proxy:

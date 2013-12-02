@@ -159,7 +159,7 @@ class BenchServer(object):
             logger.setLevel(level)
             loghandler = logging.StreamHandler(client_file)
             logformat = logging.Formatter(
-                '%(server)s %(asctime)s %(levelname)s %(message)s')
+                'bench-server %(asctime)s %(levelname)s %(message)s')
             loghandler.setFormatter(logformat)
             logger.addHandler(loghandler)
 
@@ -169,7 +169,7 @@ class BenchServer(object):
             except socket.error:
                 logger.warning('Socket error', exc_info=1)
 
-            logger.logger.removeHandler(loghandler)
+            logger.removeHandler(loghandler)
             client_file.close()
             client.close()
 
