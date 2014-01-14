@@ -1,0 +1,3 @@
+include AUTHORS LICENSE  .unittests test/__init__.py CHANGELOG
+include tox.ini requirements.txt test-requirements.txt
+
