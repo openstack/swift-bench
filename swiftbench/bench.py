@@ -101,8 +101,8 @@ class SourceFile(object):
         if self.pos >= self.size:
             raise StopIteration
         chunk_size = min(self.size - self.pos, self.chunk_size)
-        yield '0' * chunk_size
         self.pos += chunk_size
+        return '0' * chunk_size
 
     def read(self, desired_size):
         chunk_size = min(self.size - self.pos, desired_size)
