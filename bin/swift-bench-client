@@ -27,12 +27,15 @@ if __name__ == '__main__':
     parser = OptionParser(usage=usage)
     parser.add_option('-o', '--log-level', dest='log_level',
                       default='info',
+                      choices=[
+                          'debug', 'info', 'warning', 'error', 'critical'],
                       help='Logging level (debug, info, etc)')
 
-    if len(sys.argv) != 3:
+    options, args = parser.parse_args()
+
+    if len(args) != 2:
         parser.print_help()
         sys.exit(1)
-    options, args = parser.parse_args()
 
     logger = logging.getLogger('swift-bench-client')
     logger.setLevel({
