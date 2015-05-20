@@ -45,13 +45,13 @@ except ImportError:
 HTTP_CONFLICT = 409
 
 
-def _func_on_containers(logger, conf, concurrency_key, func):
+def _func_on_containers(logger, conf, concurrency_key, func, **kwargs):
     """Run a function on each container with concurrency."""
 
     bench = Bench(logger, conf, [])
     pool = eventlet.GreenPool(int(getattr(conf, concurrency_key)))
     for container in conf.containers:
-        pool.spawn_n(func, bench.url, bench.token, container)
+        pool.spawn_n(func, bench.url, bench.token, container, **kwargs)
     pool.waitall()
 
 
@@ -73,7 +73,15 @@ def delete_containers(logger, conf):
 def create_containers(logger, conf):
     """Utility function to create benchmark containers."""
 
-    _func_on_containers(logger, conf, 'put_concurrency', client.put_container)
+    if conf.policy_name:
+        logger.info("Creating containers with storage policy: %s" %
+                    conf.policy_name)
+        _func_on_containers(logger, conf, 'put_concurrency',
+                            client.put_container,
+                            headers={'X-Storage-Policy': conf.policy_name})
+    else:
+        _func_on_containers(logger, conf, 'put_concurrency',
+                            client.put_container)
 
 
 class SourceFile(object):

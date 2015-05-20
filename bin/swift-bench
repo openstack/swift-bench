@@ -74,6 +74,7 @@ if __name__ == '__main__':
     num_gets = 10000
     delete = yes
     auth_version = 1.0
+    policy_name = gold
     """
     parser = OptionParser(usage=usage)
     parser.add_option('', '--saio', dest='saio', action='store_true',
@@ -120,6 +121,9 @@ if __name__ == '__main__':
                       help='Authentication version')
     parser.add_option('-d', '--delay', dest='delay',
                       help='Delay before delete requests in seconds')
+    parser.add_option('-P', '--policy-name', dest='policy_name',
+                      help='Specify which policy to use when creating '
+                           'containers')
 
     if len(sys.argv) == 1:
         parser.print_help()
