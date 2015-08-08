@@ -104,6 +104,21 @@ log_name = %(yarr)s'''
         os.unlink(temppath)
         self.assertRaises(SystemExit, utils.readconf, temppath)
 
+    @mock.patch("swiftbench.utils.getproxies")
+    @mock.patch("swiftbench.utils.proxy_bypass")
+    def test_using_http_proxy(self, mock_proxy_bypass, mock_getproxies):
+        mock_getproxies.return_value = {'http': 'proxy', 'https': 'proxy'}
+
+        def fake_proxy_bypass(url):
+            return url == "localhost"
+        mock_proxy_bypass.side_effect = fake_proxy_bypass
+
+        self.assertTrue(utils.using_http_proxy("http://host1/"))
+        self.assertFalse(utils.using_http_proxy("http://localhost/"))
+        self.assertTrue(utils.using_http_proxy("https://host1/"))
+        self.assertFalse(utils.using_http_proxy("https://localhost/"))
+        self.assertFalse(utils.using_http_proxy("dummy://localhost/"))
+        self.assertFalse(utils.using_http_proxy("dummy://host1/"))
 
 if __name__ == '__main__':
     unittest.main()

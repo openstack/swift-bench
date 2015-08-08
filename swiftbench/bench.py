@@ -30,7 +30,7 @@ from eventlet.green.httplib import CannotSendRequest
 
 import swiftclient as client
 
-from swiftbench.utils import config_true_value
+from swiftbench.utils import config_true_value, using_http_proxy
 
 try:
     import simplejson as json
@@ -199,6 +199,9 @@ class Bench(object):
         self.auth_version = conf.auth_version
         self.logger.info("Auth version: %s" % self.auth_version)
         if self.use_proxy:
+            if using_http_proxy(self.auth_url):
+                logger.warn("Auth is going through HTTP proxy server. This "
+                            "could affect test result")
             url, token = client.get_auth(self.auth_url, self.user, self.key,
                                          auth_version=self.auth_version)
             self.token = token
@@ -212,6 +215,10 @@ class Bench(object):
             self.account = conf.account
             self.url = conf.url
             self.ip, self.port = self.url.split('/')[2].split(':')
+
+        if using_http_proxy(self.url):
+            logger.warn("Communication with Swift server is going through "
+                        "HTTP proxy server. This could affect test result")
 
         self.object_size = int(conf.object_size)
         self.object_sources = conf.object_sources

@@ -15,6 +15,11 @@
 
 import sys
 from ConfigParser import ConfigParser, RawConfigParser
+try:
+    from urllib import getproxies, proxy_bypass
+except ImportError:
+    from urllib.request import getproxies, proxy_bypass
+from urlparse import urlparse
 
 # Used when reading config values
 TRUE_VALUES = set(('true', '1', 'yes', 'on', 't', 'y'))
@@ -77,3 +82,12 @@ def config_true_value(value):
     """
     return value is True or \
         (isinstance(value, basestring) and value.lower() in TRUE_VALUES)
+
+
+def using_http_proxy(url):
+    """
+    Return True if the url will use HTTP proxy.
+    Returns False otherwise.
+    """
+    up = urlparse(url)
+    return up.scheme.lower() in getproxies() and not proxy_bypass(up.netloc)
