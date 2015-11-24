@@ -330,8 +330,8 @@ class DistributedBenchController(object):
         eventlet.patcher.monkey_patch(socket=True)
         pool = eventlet.GreenPool(size=len(self.clients))
         pile = eventlet.GreenPile(pool)
-        for client in self.clients:
-            pile.spawn(self.do_run, client)
+        for c in self.clients:
+            pile.spawn(self.do_run, c)
         results = {
             'PUTS': dict(count=0, failures=0, rate=0.0),
             'GETS': dict(count=0, failures=0, rate=0.0),
