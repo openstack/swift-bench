@@ -1,2 +1,2 @@
 python-swiftclient
-eventlet>=0.9.15
+eventlet>=0.17.4  # MIT
