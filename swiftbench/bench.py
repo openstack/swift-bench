@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import re
 import sys
 import uuid
@@ -32,10 +33,6 @@ import swiftclient as client
 
 from swiftbench.utils import config_true_value, using_http_proxy
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
 
 try:
     from swift.common import direct_client
