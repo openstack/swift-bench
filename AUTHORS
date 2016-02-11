@@ -1,6 +1,7 @@
 Alex Gaynor <alex.gaynor@gmail.com>
 Anne Gentle <anne@openstack.org>
 Chmouel Boudjnah <chmouel@enovance.com>
+Christian Schwede <christian.schwede@enovance.com>
 Chuck Thier <cthier@gmail.com>
 Clay Gerrard <clay.gerrard@gmail.com>
 Dan Prince <dprince@redhat.com>
@@ -12,6 +13,8 @@ Florian Hines <syn@ronin.io>
 François Charlier <francois.charlier@enovance.com>
 Greg Holt <gholt@rackspace.com>
 Greg Lange <greglange@gmail.com>
+Jenkins <jenkins@review.openstack.org>
+Jeremy Stanley <fungi@yuggoth.org>
 Joe Arnold <joe@swiftstack.com>
 John Dickinson <me@not.mn>
 Jon Snitow <otherjon@swiftstack.com>
@@ -21,11 +24,16 @@ Kun Huang <gareth@unitedstack.com>
 Maru Newby <mnewby@internap.com>
 Michael Barton <mike@weirdlooking.com>
 Monty Taylor <mordred@inaugust.com>
-ning_zhang <ning@zmanda.com>
+Ondrej Novy <ondrej.novy@firma.seznam.cz>
 Peter Portante <peter.portante@redhat.com>
 Samuel Merritt <sam@swiftstack.com>
+Sascha Peilicke <saschpe@gmx.de>
 TheSriram <sriram@klusterkloud.com>
+Thiago da Silva <thiago@redhat.com>
 Tom Fifield <tom@openstack.org>
 Victor Rodionov <victor.rodionov@nexenta.com>
 Zap Chang <zapchang@gmail.com>
 ZhiQiang Fan <aji.zqfan@gmail.com>
+dharmendra <dharmendra.kushwaha@nectechnologies.in>
+ning_zhang <ning@zmanda.com>
+reedip <reedip.banerjee@nectechnologies.in>

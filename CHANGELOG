@@ -1,3 +1,11 @@
+swift-bench (1.1)
+
+    * Added a storage policy option to allow containers to be created
+      with a given policy rather than the cluster default.
+    * eventlet dependency has been raised to >=0.17.4
+    * Warn if an HTTP proxy is detected.
+    * Various other minor fixes
+
 swift-bench (1.0)
 
     * Initial release, after moving from OpenStack Swift
