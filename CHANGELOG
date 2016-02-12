@@ -1,3 +1,7 @@
+swift-bench (1.2)
+
+    * updated setup.cfg for release tooling
+
 swift-bench (1.1)
 
     * Added a storage policy option to allow containers to be created
