@@ -54,28 +54,28 @@ log_name = yarr'''
                         'log_name': None,
                         'section1': {'foo': 'bar'},
                         'section2': {'log_name': 'yarr'}}
-            self.assertEquals(result, expected)
+            self.assertEqual(result, expected)
             conffile = conf_object_maker()
             result = utils.readconf(conffile, 'section1')
             expected = {'__file__': conffile, 'log_name': 'section1',
                         'foo': 'bar'}
-            self.assertEquals(result, expected)
+            self.assertEqual(result, expected)
             conffile = conf_object_maker()
             result = utils.readconf(conffile,
                                     'section2').get('log_name')
             expected = 'yarr'
-            self.assertEquals(result, expected)
+            self.assertEqual(result, expected)
             conffile = conf_object_maker()
             result = utils.readconf(conffile, 'section1',
                                     log_name='foo').get('log_name')
             expected = 'foo'
-            self.assertEquals(result, expected)
+            self.assertEqual(result, expected)
             conffile = conf_object_maker()
             result = utils.readconf(conffile, 'section1',
                                     defaults={'bar': 'baz'})
             expected = {'__file__': conffile, 'log_name': 'section1',
                         'foo': 'bar', 'bar': 'baz'}
-            self.assertEquals(result, expected)
+            self.assertEqual(result, expected)
         self.assertRaises(SystemExit, utils.readconf, temppath, 'section3')
         os.unlink(temppath)
         self.assertRaises(SystemExit, utils.readconf, temppath)
@@ -100,7 +100,7 @@ log_name = %(yarr)s'''
                         'log_name': None,
                         'section1': {'foo': 'bar'},
                         'section2': {'log_name': '%(yarr)s'}}
-            self.assertEquals(result, expected)
+            self.assertEqual(result, expected)
         os.unlink(temppath)
         self.assertRaises(SystemExit, utils.readconf, temppath)
 
