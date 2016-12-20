@@ -132,7 +132,7 @@ if __name__ == '__main__':
     if options.saio:
         CONF_DEFAULTS.update(SAIO_DEFAULTS)
     if getattr(options, 'lower_object_size', None):
-        if options.object_size <= options.lower_object_size:
+        if int(options.object_size) <= int(options.lower_object_size):
             raise ValueError('--lower-object-size (%s) must be '
                              '< --object-size (%s)' %
                              (options.lower_object_size, options.object_size))
