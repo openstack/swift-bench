@@ -31,7 +31,7 @@ setup(
     description='Benchmark tool for OpenStack Swift',
     license='Apache License (2.0)',
     author='OpenStack',
-    author_email='openstack-dev@lists.openstack.org',
+    author_email='openstack-discuss@lists.openstack.org',
     url='http://openstack.org',
     packages=find_packages(exclude=['test', 'bin']),
     test_suite='nose.collector',
