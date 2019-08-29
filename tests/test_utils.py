@@ -120,5 +120,40 @@ log_name = %(yarr)s'''
         self.assertFalse(utils.using_http_proxy("dummy://localhost/"))
         self.assertFalse(utils.using_http_proxy("dummy://host1/"))
 
+    def test_get_size_bytes(self):
+        self.assertEqual(utils.get_size_bytes('10M'), 10 * 1024 * 1024)
+        self.assertEqual(utils.get_size_bytes('4k'), 4096)
+        self.assertEqual(utils.get_size_bytes('5G'), 5 * 1024 * 1024 * 1024)
+        self.assertEqual(utils.get_size_bytes('1234'), 1234)
+        self.assertEqual(utils.get_size_bytes('1 k'), 1024)
+        self.assertEqual(utils.get_size_bytes(' 1k'), 1024)
+        self.assertEqual(utils.get_size_bytes('1k '), 1024)
+
+        with self.assertRaises(ValueError):
+            utils.get_size_bytes('1K')
+        with self.assertRaises(ValueError):
+            utils.get_size_bytes('1m')
+        with self.assertRaises(ValueError):
+            utils.get_size_bytes('1g')
+
+        with self.assertRaises(ValueError):
+            utils.get_size_bytes('1kb')
+        with self.assertRaises(ValueError):
+            utils.get_size_bytes('1kB')
+
+        with self.assertRaises(ValueError):
+            utils.get_size_bytes('1T')
+        with self.assertRaises(ValueError):
+            utils.get_size_bytes('1P')
+        with self.assertRaises(ValueError):
+            utils.get_size_bytes('1E')
+        with self.assertRaises(ValueError):
+            utils.get_size_bytes('1Y')
+        with self.assertRaises(ValueError):
+            utils.get_size_bytes('asdf')
+
+        with self.assertRaises(TypeError):
+            utils.get_size_bytes(1)
+
 if __name__ == '__main__':
     unittest.main()

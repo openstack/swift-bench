@@ -33,7 +33,8 @@ from six.moves import range
 
 import swiftclient as client
 
-from swiftbench.utils import config_true_value, using_http_proxy
+from swiftbench.utils import config_true_value, using_http_proxy, \
+    get_size_bytes
 
 
 try:
@@ -219,10 +220,10 @@ class Bench(object):
             logger.warn("Communication with Swift server is going through "
                         "HTTP proxy server. This could affect test result")
 
-        self.object_size = int(conf.object_size)
+        self.object_size = get_size_bytes(conf.object_size)
         self.object_sources = conf.object_sources
-        self.lower_object_size = int(conf.lower_object_size)
-        self.upper_object_size = int(conf.upper_object_size)
+        self.lower_object_size = get_size_bytes(conf.lower_object_size)
+        self.upper_object_size = get_size_bytes(conf.upper_object_size)
         self.files = []
         if self.object_sources:
             self.object_sources = self.object_sources.split()

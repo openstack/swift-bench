@@ -89,3 +89,22 @@ def using_http_proxy(url):
     """
     up = urlparse(url)
     return up.scheme.lower() in getproxies() and not proxy_bypass(up.netloc)
+
+
+def get_size_bytes(value):
+    """
+    Expand suffixes for object sizes.
+
+    For example, '10k' becomes 10240, and '2M' becomes 2097152.
+    """
+    if not isinstance(value, six.string_types):
+        raise TypeError
+    value = value.strip()
+    multiple = {
+        'G': 1024 ** 3,
+        'M': 1024 ** 2,
+        'k': 1024,
+    }.get(value[-1])
+    if multiple is None:
+        return int(value)
+    return multiple * int(value[:-1])
