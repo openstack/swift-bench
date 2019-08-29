@@ -29,6 +29,8 @@ import eventlet
 import eventlet.pools
 from eventlet.green.httplib import CannotSendRequest
 
+from six.moves import range
+
 import swiftclient as client
 
 from swiftbench.utils import config_true_value, using_http_proxy
@@ -107,12 +109,12 @@ class SourceFile(object):
             raise StopIteration
         chunk_size = min(self.size - self.pos, self.chunk_size)
         self.pos += chunk_size
-        return '0' * chunk_size
+        return b'0' * chunk_size
 
     def read(self, desired_size):
         chunk_size = min(self.size - self.pos, desired_size)
         self.pos += chunk_size
-        return '0' * chunk_size
+        return b'0' * chunk_size
 
 
 class ConnectionPool(eventlet.pools.Pool):
@@ -224,7 +226,10 @@ class Bench(object):
         self.files = []
         if self.object_sources:
             self.object_sources = self.object_sources.split()
-            self.files = [file(f, 'rb').read() for f in self.object_sources]
+            self.files = []
+            for f in self.object_sources:
+                with open(f, 'rb') as fp:
+                    self.files.append(fp.read())
 
         self.put_concurrency = int(conf.put_concurrency)
         self.get_concurrency = int(conf.get_concurrency)
@@ -270,7 +275,7 @@ class Bench(object):
         self.heartbeat -= 13    # just to get the first report quicker
         self.failures = 0
         self.complete = 0
-        for i in xrange(self.total):
+        for i in range(self.total):
             if self.aborted:
                 break
             pool.spawn_n(self._run, i)

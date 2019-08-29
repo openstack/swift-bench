@@ -18,7 +18,7 @@ import os
 import tempfile
 import unittest
 
-from StringIO import StringIO
+from six.moves import cStringIO
 
 from swiftbench import utils
 
@@ -42,11 +42,11 @@ foo = bar
 log_name = yarr'''
         # setup a real file
         fd, temppath = tempfile.mkstemp(dir='/tmp')
-        with os.fdopen(fd, 'wb') as f:
+        with os.fdopen(fd, 'w') as f:
             f.write(conf)
         make_filename = lambda: temppath
         # setup a file stream
-        make_fp = lambda: StringIO(conf)
+        make_fp = lambda: cStringIO(conf)
         for conf_object_maker in (make_filename, make_fp):
             conffile = conf_object_maker()
             result = utils.readconf(conffile)
@@ -88,11 +88,11 @@ foo = bar
 log_name = %(yarr)s'''
         # setup a real file
         fd, temppath = tempfile.mkstemp(dir='/tmp')
-        with os.fdopen(fd, 'wb') as f:
+        with os.fdopen(fd, 'w') as f:
             f.write(conf)
         make_filename = lambda: temppath
         # setup a file stream
-        make_fp = lambda: StringIO(conf)
+        make_fp = lambda: cStringIO(conf)
         for conf_object_maker in (make_filename, make_fp):
             conffile = conf_object_maker()
             result = utils.readconf(conffile, raw=True)

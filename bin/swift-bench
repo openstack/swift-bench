@@ -21,6 +21,8 @@ import signal
 import uuid
 from optparse import OptionParser
 
+from six.moves import range
+
 from swiftbench.bench import (BenchController, DistributedBenchController,
                               create_containers, delete_containers)
 from swiftbench.utils import readconf, config_true_value
@@ -154,7 +156,7 @@ if __name__ == '__main__':
         options.get_concurrency = options.concurrency
         options.del_concurrency = options.concurrency
     options.containers = ['%s_%d' % (options.container_name, i)
-                          for i in xrange(int(options.num_containers))]
+                          for i in range(int(options.num_containers))]
 
     # Turn "yes"/"no"/etc. strings to booleans
     options.use_proxy = config_true_value(options.use_proxy)

@@ -13,13 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import six
 import sys
-from ConfigParser import ConfigParser, RawConfigParser
-try:
-    from urllib import getproxies, proxy_bypass
-except ImportError:
-    from urllib.request import getproxies, proxy_bypass
-from urlparse import urlparse
+from six.moves.configparser import ConfigParser, RawConfigParser
+from six.moves.urllib.parse import urlparse
+from six.moves.urllib.request import getproxies, proxy_bypass
 
 # Used when reading config values
 TRUE_VALUES = set(('true', '1', 'yes', 'on', 't', 'y'))
@@ -51,14 +49,14 @@ def readconf(conf_path, section_name=None, log_name=None, defaults=None,
     else:
         success = c.read(conf_path)
         if not success:
-            print "Unable to read config from %s" % conf_path
+            print("Unable to read config from %s" % conf_path)
             sys.exit(1)
     if section_name:
         if c.has_section(section_name):
             conf = dict(c.items(section_name))
         else:
-            print "Unable to find %s config section in %s" % \
-                (section_name, conf_path)
+            print("Unable to find %s config section in %s" %
+                  (section_name, conf_path))
             sys.exit(1)
         if "log_name" not in conf:
             if log_name is not None:
@@ -81,7 +79,7 @@ def config_true_value(value):
     Returns False otherwise.
     """
     return value is True or \
-        (isinstance(value, basestring) and value.lower() in TRUE_VALUES)
+        (isinstance(value, six.string_types) and value.lower() in TRUE_VALUES)
 
 
 def using_http_proxy(url):
