@@ -386,9 +386,10 @@ class BenchController(object):
 
     def sigint1(self, signum, frame):
         if self.delete:
-            print >>sys.stderr, (
+            print(
                 'SIGINT received; finishing up and running DELETE.\n'
-                'Send one more SIGINT to exit *immediately*.')
+                'Send one more SIGINT to exit *immediately*.',
+                file=sys.stderr)
             self.aborted = True
             if self.running and not isinstance(self.running, BenchDELETE):
                 self.running.aborted = True
