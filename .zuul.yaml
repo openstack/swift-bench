@@ -1,5 +1,4 @@
 - project:
     templates:
       - check-requirements
-      - openstack-python-jobs
       - openstack-python3-ussuri-jobs
