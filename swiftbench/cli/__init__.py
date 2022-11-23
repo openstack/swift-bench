@@ -117,6 +117,8 @@ def main(argv):
     parser.add_argument('-C', '--num-containers', type=int,
                         help='Number of containers to distribute objects '
                              'among')
+    parser.add_argument('--container-name',
+                        help='Set the base container_name')
     parser.add_argument('-x', '--no-delete',
                         dest='delete', action='store_false',
                         help='If set, will not delete the objects created')
@@ -155,8 +157,11 @@ def main(argv):
         options.put_concurrency = options.concurrency
         options.get_concurrency = options.concurrency
         options.del_concurrency = options.concurrency
-    options.containers = ['%s_%d' % (options.container_name, i)
-                          for i in range(int(options.num_containers))]
+    if options.num_containers == 1:
+        options.containers = [options.container_name]
+    else:
+        options.containers = ['%s_%d' % (options.container_name, i)
+                              for i in range(int(options.num_containers))]
 
     # Turn "yes"/"no"/etc. strings to booleans
     options.use_proxy = config_true_value(options.use_proxy)

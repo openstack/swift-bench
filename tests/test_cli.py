@@ -123,6 +123,7 @@ class TestCli(unittest.TestCase):
                 '--num-objects', '5000',
                 '--num-gets', '4000',
                 '--num-containers', '4',
+                '--container-name', 'foo',
                 '-x',
                 '--auth_version', '2.0',
                 '--delay', '10',
@@ -143,6 +144,9 @@ class TestCli(unittest.TestCase):
         self.assertEqual(controller_opts.num_gets, 4000)
         self.assertEqual(controller_opts.num_containers, 4)
         self.assertEqual(len(controller_opts.containers), 4)
+        self.assertEqual([
+            c.startswith('foo_') for c in controller_opts.containers
+        ], [True] * 4)
         self.assertFalse(controller_opts.delete)
         self.assertEqual(controller_opts.auth_version, '2.0')
         self.assertEqual(controller_opts.delay, 10)
@@ -155,6 +159,12 @@ class TestCli(unittest.TestCase):
         self.assertEqual(controller_opts.log_level, 'INFO')
         self.assertEqual(controller_opts.timeout, 10)
         self.assertTrue(controller_opts.containers)
+
+    def test_single_container(self):
+        controller_opts, container_opts, del_opts = self.run_main([
+            '--container-name', 'bar', '--num-containers', '1'])
+        self.assertEqual(controller_opts.num_containers, 1)
+        self.assertEqual(controller_opts.containers, ['bar'])
 
     def test_concurrency_overrides_get_put_delete(self):
         controller_opts, container_opts, del_opts = self.run_main(
