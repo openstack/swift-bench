@@ -13,17 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import argparse
 import copy
 import logging
 import os
 import sys
 import signal
 import uuid
-from optparse import OptionParser
 
 from swiftbench.bench import (BenchController, DistributedBenchController,
                               create_containers, delete_containers)
-from swiftbench.utils import readconf, config_true_value
+from swiftbench.utils import readconf, config_true_value, get_size_bytes
 
 # The defaults should be sufficient to run swift-bench on a SAIO
 CONF_DEFAULTS = {
@@ -32,25 +32,24 @@ CONF_DEFAULTS = {
     'key': os.environ.get('ST_KEY', ''),
     'auth_version': '1.0',
     'use_proxy': 'yes',
-    'put_concurrency': '10',
-    'get_concurrency': '10',
-    'del_concurrency': '10',
-    'concurrency': '',  # set all 3 in one shot
+    'put_concurrency': 10,
+    'get_concurrency': 10,
+    'del_concurrency': 10,
     'object_sources': '',  # set of file contents to read and use for PUTs
-    'lower_object_size': '10',  # bounded random size used if these differ
-    'upper_object_size': '10',
-    'object_size': '1',  # only if not object_sources and lower == upper
-    'num_objects': '1000',
-    'num_gets': '10000',
+    'lower_object_size': 10,  # bounded random size used if these differ
+    'upper_object_size': 10,
+    'object_size': 1,  # only if not object_sources and lower == upper
+    'num_objects': 1000,
+    'num_gets': 10000,
     'delete': 'yes',
     'container_name': uuid.uuid4().hex,  # really "container name base"
-    'num_containers': '20',
+    'num_containers': 20,
     'url': '',  # used when use_proxy = no or overrides auth X-Storage-Url
     'account': '',  # used when use_proxy = no
     'devices': 'sdb1',  # space-sep list
     'log_level': 'INFO',
-    'timeout': '10',
-    'delay': '0',
+    'timeout': 10,
+    'delay': 0,
     'bench_clients': [],
 }
 
@@ -62,7 +61,7 @@ SAIO_DEFAULTS = {
 
 
 def main(argv):
-    usage = "usage: %prog [OPTIONS] [CONF_FILE]"
+    usage = "usage: %(prog)s [OPTIONS] [CONF_FILE]"
     usage += """\n\nConf file with SAIO defaults:
 
     [bench]
@@ -77,78 +76,82 @@ def main(argv):
     auth_version = 1.0
     policy_name = gold
     """
-    parser = OptionParser(usage=usage)
-    parser.add_option('', '--saio', dest='saio', action='store_true',
-                      default=False, help='Run benchmark with SAIO defaults')
-    parser.add_option('-A', '--auth', dest='auth',
-                      help='URL for obtaining an auth token')
-    parser.add_option('-U', '--user', dest='user',
-                      help='User name for obtaining an auth token')
-    parser.add_option('-K', '--key', dest='key',
-                      help='Key for obtaining an auth token')
-    parser.add_option('-b', '--bench-clients', action='append',
-                      metavar='<ip>:<port>',
-                      help=('A string of the form "<ip>:<port>" which matches '
-                            'the arguments supplied to a swift-bench-client '
-                            'process.  This argument must be specified '
-                            'once per swift-bench-client you want to '
-                            'utilize.'))
-    parser.add_option('-u', '--url', dest='url',
-                      help='Storage URL')
-    parser.add_option('-c', '--concurrency', dest='concurrency',
-                      help=('Number of concurrent connections to use. For '
-                            'finer-grained control, see --get-concurrency, '
-                            '--put-concurrency, and --delete-concurrency.'))
-    parser.add_option('--get-concurrency', dest='get_concurrency',
-                      help='Number of concurrent GET requests')
-    parser.add_option('--put-concurrency', dest='put_concurrency',
-                      help='Number of concurrent PUT requests')
-    parser.add_option('--delete-concurrency', dest='del_concurrency',
-                      help='Number of concurrent DELETE requests')
-    parser.add_option('-s', '--object-size', dest='object_size',
-                      help='Size of objects to PUT (in bytes)')
-    parser.add_option('-l', '--lower-object-size', dest='lower_object_size',
-                      help=('Lower size of objects (in bytes); '
-                            '--object-size will be upper-object-size'))
-    parser.add_option('-n', '--num-objects', dest='num_objects',
-                      help='Number of objects to PUT')
-    parser.add_option('-g', '--num-gets', dest='num_gets',
-                      help='Number of GET operations to perform')
-    parser.add_option('-C', '--num-containers', dest='num_containers',
-                      help='Number of containers to distribute objects among')
-    parser.add_option('-x', '--no-delete', dest='delete', action='store_false',
-                      help='If set, will not delete the objects created')
-    parser.add_option('-V', '--auth_version', dest='auth_version',
-                      help='Authentication version')
-    parser.add_option('-d', '--delay', dest='delay',
-                      help='Delay before delete requests in seconds')
-    parser.add_option('-P', '--policy-name', dest='policy_name',
-                      help='Specify which policy to use when creating '
-                           'containers')
+    parser = argparse.ArgumentParser(usage=usage)
+    parser.add_argument('--saio', action='store_true',
+                        help='Run benchmark with SAIO defaults')
+    parser.add_argument('-A', '--auth',
+                        help='URL for obtaining an auth token')
+    parser.add_argument('-U', '--user',
+                        help='User name for obtaining an auth token')
+    parser.add_argument('-K', '--key',
+                        help='Key for obtaining an auth token')
+    parser.add_argument('-b', '--bench-clients', action='append',
+                        metavar='<ip>:<port>',
+                        help=('A string of the form "<ip>:<port>" which '
+                              'matches the arguments supplied to a '
+                              'swift-bench-client process.  This argument '
+                              'must be specified once per swift-bench-client '
+                              'you want to utilize.'))
+    parser.add_argument('-u', '--url',
+                        help='Storage URL')
+    parser.add_argument('-c', '--concurrency', type=int,
+                        help=('Number of concurrent connections to use. For '
+                              'finer-grained control, see --get-concurrency, '
+                              '--put-concurrency, and --delete-concurrency.'))
+    parser.add_argument('--get-concurrency', type=int,
+                        help='Number of concurrent GET requests')
+    parser.add_argument('--put-concurrency', type=int,
+                        help='Number of concurrent PUT requests')
+    parser.add_argument('--delete-concurrency', type=int,
+                        dest="del_concurrency",
+                        help='Number of concurrent DELETE requests')
+    parser.add_argument('-s', '--object-size', type=get_size_bytes,
+                        help='Size of objects to PUT (in bytes)')
+    parser.add_argument('-l', '--lower-object-size', type=get_size_bytes,
+                        help=('Lower size of objects (in bytes); '
+                              '--object-size will be upper-object-size'))
+    parser.add_argument('-n', '--num-objects', type=int,
+                        help='Number of objects to PUT')
+    parser.add_argument('-g', '--num-gets', type=int,
+                        help='Number of GET operations to perform')
+    parser.add_argument('-C', '--num-containers', type=int,
+                        help='Number of containers to distribute objects '
+                             'among')
+    parser.add_argument('-x', '--no-delete',
+                        dest='delete', action='store_false',
+                        help='If set, will not delete the objects created')
+    parser.add_argument('-V', '--auth_version',
+                        help='Authentication version')
+    parser.add_argument('-d', '--delay', type=int,
+                        help='Delay before delete requests in seconds')
+    parser.add_argument('-P', '--policy-name',
+                        help='Specify which policy to use when creating '
+                             'containers')
+    parser.add_argument('conf_file', nargs="?",
+                        help='config file')
 
-    options, args = parser.parse_args(argv)
+    args = parser.parse_args(argv)
     parser_defaults = copy.deepcopy(CONF_DEFAULTS)
-    if options.saio:
+    if args.saio:
         parser_defaults.update(SAIO_DEFAULTS)
-    if getattr(options, 'lower_object_size', None):
-        if options.object_size <= options.lower_object_size:
+    if getattr(args, 'lower_object_size', None):
+        if args.object_size <= args.lower_object_size:
             raise ValueError('--lower-object-size (%s) must be '
                              '< --object-size (%s)' %
-                             (options.lower_object_size, options.object_size))
-        parser_defaults['upper_object_size'] = options.object_size
-    if args:
-        conf = args[0]
-        if not os.path.exists(conf):
-            sys.exit("No such conf file: %s" % conf)
-        conf = readconf(conf, 'bench', log_name='swift-bench',
+                             (args.lower_object_size, args.object_size))
+        parser_defaults['upper_object_size'] = args.object_size
+    if args.conf_file:
+        if not os.path.exists(args.conf_file):
+            sys.exit("No such conf file: %s" % args.conf_file)
+        conf = readconf(args.conf_file, 'bench', log_name='swift-bench',
                         defaults=parser_defaults)
         conf['bench_clients'] = []
     else:
         conf = parser_defaults
     parser.set_defaults(**conf)
-    options, _junk = parser.parse_args(argv)
+    options = parser.parse_args(argv)
 
-    if options.concurrency != '':
+    if options.concurrency:
         options.put_concurrency = options.concurrency
         options.get_concurrency = options.concurrency
         options.del_concurrency = options.concurrency

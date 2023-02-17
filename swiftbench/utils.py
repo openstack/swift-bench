@@ -99,6 +99,8 @@ def get_size_bytes(value):
 
     For example, '10k' becomes 10240, and '2M' becomes 2097152.
     """
+    if isinstance(value, int):
+        return value
     if not isinstance(value, str):
         raise TypeError
     value = value.strip()

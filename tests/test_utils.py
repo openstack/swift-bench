@@ -144,8 +144,9 @@ log_name = %(yarr)s'''
         with self.assertRaises(ValueError):
             utils.get_size_bytes('asdf')
 
+        self.assertEqual(utils.get_size_bytes(1), 1)
         with self.assertRaises(TypeError):
-            utils.get_size_bytes(1)
+            utils.get_size_bytes(1.0)
 
 
 if __name__ == '__main__':
