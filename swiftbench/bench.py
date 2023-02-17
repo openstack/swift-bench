@@ -15,6 +15,7 @@
 
 from __future__ import print_function
 
+import io
 import json
 import re
 import sys
@@ -31,6 +32,7 @@ import eventlet
 import eventlet.pools
 from eventlet.green.httplib import CannotSendRequest
 
+import six
 from six.moves import range
 
 import swiftclient as client
@@ -152,7 +154,9 @@ class BenchServer(object):
         while True:
             client, address = s.accept()
             self.logger.debug('Accepting connection from %s:%s', *address)
-            client_file = client.makefile('rb+', 1)
+            client_file = client.makefile('rwb', 1)
+            if not six.PY2:
+                client_file = io.TextIOWrapper(client_file)
             json_data = client_file.read()
             conf = Values(json.loads(json_data))
 
@@ -343,7 +347,7 @@ class DistributedBenchController(object):
             'DEL': dict(count=0, failures=0, rate=0.0),
         }
         for result in pile:
-            for k, v in result.iteritems():
+            for k, v in result.items():
                 target = results[k]
                 target['count'] += int(v['count'])
                 target['failures'] += int(v['failures'])
@@ -357,11 +361,13 @@ class DistributedBenchController(object):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         ip, port = client.split(':')
         s.connect((ip, int(port)))
-        s.sendall(json.dumps(self.conf.__dict__))
+        s.sendall(json.dumps(self.conf.__dict__).encode('ascii'))
         s.shutdown(socket.SHUT_WR)
         s_file = s.makefile('rb', 1)
         result = {}
         for line in s_file:
+            if not six.PY2:
+                line = line.decode('ascii')
             match = self.final_re.search(line)
             if match:
                 g = match.groups()
