@@ -1,4 +1,4 @@
 - project:
     templates:
       - check-requirements
-      - openstack-python3-xena-jobs
+      - openstack-python3-jobs
