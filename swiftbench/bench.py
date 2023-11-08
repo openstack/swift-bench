@@ -32,6 +32,7 @@ import eventlet
 import eventlet.pools
 from eventlet.green.httplib import CannotSendRequest
 
+import requests.exceptions
 import six
 from six.moves import range
 
@@ -65,7 +66,8 @@ def delete_containers(logger, conf):
     def _deleter(url, token, container):
         try:
             client.delete_container(url, token, container)
-        except client.ClientException as e:
+        except (client.ClientException,
+                requests.exceptions.ConnectionError) as e:
             if e.http_status != HTTP_CONFLICT:
                 logger.warn("Unable to delete container '%s'. "
                             "Got http status '%d'."
@@ -452,7 +454,8 @@ class BenchDELETE(Bench):
                     direct_client.direct_delete_object(node, partition,
                                                        self.account,
                                                        container_name, name)
-            except client.ClientException as e:
+            except (client.ClientException,
+                    requests.exceptions.ConnectionError) as e:
                 self.logger.debug(str(e))
                 self.failures += 1
         self.complete += 1
@@ -481,7 +484,8 @@ class BenchGET(Bench):
                     direct_client.direct_get_object(node, partition,
                                                     self.account,
                                                     container_name, name)
-            except client.ClientException as e:
+            except (client.ClientException,
+                    requests.exceptions.ConnectionError) as e:
                 self.logger.debug(str(e))
                 self.failures += 1
         self.complete += 1
@@ -525,7 +529,8 @@ class BenchPUT(Bench):
                                                     container_name, name,
                                                     source,
                                                     content_length=len(source))
-            except client.ClientException as e:
+            except (client.ClientException,
+                    requests.exceptions.ConnectionError) as e:
                 self.logger.debug(str(e))
                 self.failures += 1
             else:
