@@ -21,8 +21,6 @@ import signal
 import uuid
 from optparse import OptionParser
 
-from six.moves import range
-
 from swiftbench.bench import (BenchController, DistributedBenchController,
                               create_containers, delete_containers)
 from swiftbench.utils import readconf, config_true_value

@@ -1,3 +1,2 @@
 python-swiftclient>=3.2.0
 eventlet>=0.17.4  # MIT
-six>=1.9.0

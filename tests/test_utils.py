@@ -18,7 +18,7 @@ import os
 import tempfile
 import unittest
 
-from six.moves import cStringIO
+import io
 
 from swiftbench import utils
 
@@ -46,7 +46,7 @@ log_name = yarr'''
             f.write(conf)
         make_filename = lambda: temppath
         # setup a file stream
-        make_fp = lambda: cStringIO(conf)
+        make_fp = lambda: io.StringIO(conf)
         for conf_object_maker in (make_filename, make_fp):
             conffile = conf_object_maker()
             result = utils.readconf(conffile)
@@ -92,7 +92,7 @@ log_name = %(yarr)s'''
             f.write(conf)
         make_filename = lambda: temppath
         # setup a file stream
-        make_fp = lambda: cStringIO(conf)
+        make_fp = lambda: io.StringIO(conf)
         for conf_object_maker in (make_filename, make_fp):
             conffile = conf_object_maker()
             result = utils.readconf(conffile, raw=True)

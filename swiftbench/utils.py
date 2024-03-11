@@ -13,11 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import six
 import sys
-from six.moves.configparser import ConfigParser, RawConfigParser
-from six.moves.urllib.parse import urlparse
-from six.moves.urllib.request import getproxies, proxy_bypass
+import configparser
+from urllib.parse import urlparse
+from urllib.request import getproxies, proxy_bypass
 
 # Used when reading config values
 TRUE_VALUES = set(('true', '1', 'yes', 'on', 't', 'y'))
@@ -41,9 +40,9 @@ def readconf(conf_path, section_name=None, log_name=None, defaults=None,
     if defaults is None:
         defaults = {}
     if raw:
-        c = RawConfigParser(defaults)
+        c = configparser.RawConfigParser(defaults)
     else:
-        c = ConfigParser(defaults)
+        c = configparser.ConfigParser(defaults)
     if hasattr(conf_path, 'readline'):
         c.readfp(conf_path)
     else:
@@ -79,7 +78,7 @@ def config_true_value(value):
     Returns False otherwise.
     """
     return value is True or \
-        (isinstance(value, six.string_types) and value.lower() in TRUE_VALUES)
+        (isinstance(value, str) and value.lower() in TRUE_VALUES)
 
 
 def using_http_proxy(url):
@@ -97,7 +96,7 @@ def get_size_bytes(value):
 
     For example, '10k' becomes 10240, and '2M' becomes 2097152.
     """
-    if not isinstance(value, six.string_types):
+    if not isinstance(value, str):
         raise TypeError
     value = value.strip()
     multiple = {

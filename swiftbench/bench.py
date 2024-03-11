@@ -33,8 +33,6 @@ import eventlet.pools
 from eventlet.green.httplib import CannotSendRequest
 
 import requests.exceptions
-import six
-from six.moves import range
 
 import swiftclient as client
 
@@ -157,8 +155,7 @@ class BenchServer(object):
             client, address = s.accept()
             self.logger.debug('Accepting connection from %s:%s', *address)
             client_file = client.makefile('rwb', 1)
-            if not six.PY2:
-                client_file = io.TextIOWrapper(client_file)
+            client_file = io.TextIOWrapper(client_file)
             json_data = client_file.read()
             conf = Values(json.loads(json_data))
 
@@ -368,8 +365,7 @@ class DistributedBenchController(object):
         s_file = s.makefile('rb', 1)
         result = {}
         for line in s_file:
-            if not six.PY2:
-                line = line.decode('ascii')
+            line = line.decode('ascii')
             match = self.final_re.search(line)
             if match:
                 g = match.groups()
