@@ -25,7 +25,7 @@ import random
 import signal
 import socket
 import logging
-from contextlib import contextmanager
+from contextlib import contextmanager, closing
 from optparse import Values
 
 import eventlet
@@ -473,8 +473,13 @@ class BenchGET(Bench):
         with self.connection() as conn:
             try:
                 if self.use_proxy:
-                    client.get_object(self.url, self.token,
-                                      container_name, name, http_conn=conn)
+                    headers, body = client.get_object(
+                        self.url, self.token,
+                        container_name, name, http_conn=conn,
+                        resp_chunk_size=2**20)
+                    with closing(body):
+                        for _ in body:
+                            pass
                 else:
                     node = {'ip': self.ip, 'port': self.port, 'device': device}
                     direct_client.direct_get_object(node, partition,
