@@ -40,37 +40,33 @@ foo = bar
 
 [section2]
 log_name = yarr'''
-        # setup a real file
         fd, temppath = tempfile.mkstemp(dir='/tmp')
         with os.fdopen(fd, 'w') as f:
             f.write(conf)
-        make_filename = lambda: temppath
-        # setup a file stream
-        make_fp = lambda: io.StringIO(conf)
-        for conf_object_maker in (make_filename, make_fp):
-            conffile = conf_object_maker()
+        # Test both a real file and a file-like object
+        for conffile in (temppath, io.StringIO(conf)):
             result = utils.readconf(conffile)
             expected = {'__file__': conffile,
                         'log_name': None,
                         'section1': {'foo': 'bar'},
                         'section2': {'log_name': 'yarr'}}
             self.assertEqual(result, expected)
-            conffile = conf_object_maker()
+
             result = utils.readconf(conffile, 'section1')
             expected = {'__file__': conffile, 'log_name': 'section1',
                         'foo': 'bar'}
             self.assertEqual(result, expected)
-            conffile = conf_object_maker()
+
             result = utils.readconf(conffile,
                                     'section2').get('log_name')
             expected = 'yarr'
             self.assertEqual(result, expected)
-            conffile = conf_object_maker()
+
             result = utils.readconf(conffile, 'section1',
                                     log_name='foo').get('log_name')
             expected = 'foo'
             self.assertEqual(result, expected)
-            conffile = conf_object_maker()
+
             result = utils.readconf(conffile, 'section1',
                                     defaults={'bar': 'baz'})
             expected = {'__file__': conffile, 'log_name': 'section1',
@@ -86,15 +82,11 @@ foo = bar
 
 [section2]
 log_name = %(yarr)s'''
-        # setup a real file
         fd, temppath = tempfile.mkstemp(dir='/tmp')
         with os.fdopen(fd, 'w') as f:
             f.write(conf)
-        make_filename = lambda: temppath
-        # setup a file stream
-        make_fp = lambda: io.StringIO(conf)
-        for conf_object_maker in (make_filename, make_fp):
-            conffile = conf_object_maker()
+        # Test both a real file and a file-like object
+        for conffile in (temppath, io.StringIO(conf)):
             result = utils.readconf(conffile, raw=True)
             expected = {'__file__': conffile,
                         'log_name': None,
@@ -154,6 +146,7 @@ log_name = %(yarr)s'''
 
         with self.assertRaises(TypeError):
             utils.get_size_bytes(1)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -44,7 +44,10 @@ def readconf(conf_path, section_name=None, log_name=None, defaults=None,
     else:
         c = configparser.ConfigParser(defaults)
     if hasattr(conf_path, 'readline'):
-        c.readfp(conf_path)
+        # make sure filelike is at the start of the file
+        if hasattr(conf_path, "seekable"):
+            conf_path.seek(0)
+        c.read_file(conf_path)
     else:
         success = c.read(conf_path)
         if not success:

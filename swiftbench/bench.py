@@ -322,7 +322,7 @@ class DistributedBenchController(object):
         self.logger = logger
         # ... INFO 1000 PUTS **FINAL** [0 failures], 34.9/s
         self.final_re = re.compile(
-            'INFO (\d+) (.*) \*\*FINAL\*\* \[(\d+) failures\], (\d+\.\d+)/s')
+            r'INFO (\d+) (.*) \*\*FINAL\*\* \[(\d+) failures\], (\d+\.\d+)/s')
         self.clients = conf.bench_clients
         del conf.bench_clients
         for key, minval in [('put_concurrency', 1),
