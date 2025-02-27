@@ -1,3 +1,13 @@
+swift-bench (2.0)
+
+    * Support for python 3.9+.
+    * Dropped support for python 2.
+    * Object sizes can now be specified with k/M/G suffixes.
+    * Support supplying container_name from cli not just from config.
+    * Treat connection errors as failures.
+    * Improve memory usage by reading GETs into 1MB chunks.
+    * Various other minor bug fixes and improvements.
+
 swift-bench (1.2)
 
     * updated setup.cfg for release tooling
