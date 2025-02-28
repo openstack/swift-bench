@@ -34,7 +34,6 @@ setup(
     author_email='openstack-discuss@lists.openstack.org',
     url='http://openstack.org',
     packages=find_packages(exclude=['test', 'bin']),
-    test_suite='nose.collector',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: Apache Software License',
